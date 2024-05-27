@@ -1,16 +1,16 @@
 package roomescape.controller;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.DynamicTest.dynamicTest;
-import static roomescape.Fixture.*;
-
-import io.restassured.RestAssured;
-import io.restassured.http.ContentType;
 import org.junit.jupiter.api.*;
+import roomescape.controller.steps.ReservationAdminSteps;
+import roomescape.controller.steps.ReservationSteps;
 import roomescape.domain.MemberRole;
 import roomescape.web.controller.request.MemberReservationRequest;
 
 import java.util.stream.Stream;
+
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.DynamicTest.dynamicTest;
+import static roomescape.Fixture.*;
 
 class ReservationControllerTest extends ControllerTest {
 
@@ -30,13 +30,7 @@ class ReservationControllerTest extends ControllerTest {
     @Test
     void reserve() {
         MemberReservationRequest request = new MemberReservationRequest("2040-01-02", 1L, 1L);
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .cookie("token", getUserToken())
-                .body(request)
-                .when().post("/reservations")
-                .then().log().all()
+        ReservationSteps.createReservation(request, getUserToken())
                 .statusCode(201)
                 .body("name", is(VALID_USER_NAME.getName()));
     }
@@ -44,18 +38,14 @@ class ReservationControllerTest extends ControllerTest {
     @DisplayName("예약을 삭제한다. -> 204")
     @Test
     void deleteBy() {
-        RestAssured.given().log().all()
-                .when().delete("/reservations/1")
-                .then().log().all()
+        ReservationSteps.deleteReservation(1L)
                 .statusCode(204);
     }
 
     @DisplayName("예약을 조회한다. -> 200")
     @Test
     void getReservations() {
-        RestAssured.given().log().all()
-                .when().get("/reservations")
-                .then().log().all()
+        ReservationSteps.getReservations()
                 .statusCode(200)
                 .body("size()", is(1));
     }
@@ -64,13 +54,7 @@ class ReservationControllerTest extends ControllerTest {
     @Test
     void reserve_IllegalDateRequest() {
         MemberReservationRequest request = new MemberReservationRequest("2040-00-02", 1L, 1L);
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .cookie(COOKIE_NAME, getUserToken())
-                .body(request)
-                .when().post("/reservations")
-                .then().log().all()
+        ReservationSteps.createReservation(request, getUserToken())
                 .statusCode(400);
     }
 
@@ -78,13 +62,7 @@ class ReservationControllerTest extends ControllerTest {
     @Test
     void reserve_NoSuchTheme() {
         MemberReservationRequest request = new MemberReservationRequest("2040-01-02", 1L, 200L);
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .cookie(COOKIE_NAME, getUserToken())
-                .body(request)
-                .when().post("/reservations")
-                .then().log().all()
+        ReservationSteps.createReservation(request, getUserToken())
                 .statusCode(400);
     }
 
@@ -92,13 +70,7 @@ class ReservationControllerTest extends ControllerTest {
     @Test
     void reserve_NoSuchTime() {
         MemberReservationRequest request = new MemberReservationRequest("2040-01-02", 100L, 1L);
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .cookie(COOKIE_NAME, getUserToken())
-                .body(request)
-                .when().post("/reservations")
-                .then().log().all()
+        ReservationSteps.createReservation(request, getUserToken())
                 .statusCode(400);
     }
 
@@ -106,13 +78,7 @@ class ReservationControllerTest extends ControllerTest {
     @Test
     void reserve_PastTime() {
         MemberReservationRequest request = new MemberReservationRequest("2024-05-10", 100L, 1L);
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .cookie(COOKIE_NAME, getUserToken())
-                .body(request)
-                .when().post("/reservations")
-                .then().log().all()
+        ReservationSteps.createReservation(request, getUserToken())
                 .statusCode(400);
     }
 
@@ -125,10 +91,7 @@ class ReservationControllerTest extends ControllerTest {
         jdbcTemplate.update("INSERT INTO reservation(date,time_id,theme_id,member_id) VALUES (?,?,?,?)",
                 "2026-02-01", 1L, 1L, 2L);
 
-        RestAssured.given().log().all()
-                .cookie(COOKIE_NAME, getUserToken())
-                .when().get("/reservations/mine")
-                .then().log().all()
+        ReservationSteps.getMyReservation(getUserToken())
                 .statusCode(200)
                 .body("size()", is(1));
     }
@@ -146,42 +109,27 @@ class ReservationControllerTest extends ControllerTest {
         jdbcTemplate.update("INSERT INTO reservation(date,time_id,theme_id,member_id) VALUES (?,?,?,?)",
                 "2026-03-02", 1L, 2L, 1L);
 
-        return Stream.of(dynamicTest("테마 아이디로 예약 필터링", () ->
-                        RestAssured.given().log().all()
-                                .cookie(COOKIE_NAME, getAdminToken())
-                                .when().get("/admin/reservations/search?themeId=1")
-                                .then().log().all()
+        return Stream.of(
+                dynamicTest("테마 아이디로 예약 필터링", () ->
+                        ReservationAdminSteps.searchReservation("themeId=1", getAdminToken())
                                 .statusCode(200)
                                 .body("size()", is(2))),
                 dynamicTest("멤버 아이디로 예약 필터링", () ->
-                        RestAssured.given().log().all()
-                                .cookie(COOKIE_NAME, getAdminToken())
-                                .when().get("/admin/reservations/search?memberId=1")
-                                .then().log().all()
+                        ReservationAdminSteps.searchReservation("memberId=1", getAdminToken())
                                 .statusCode(200)
                                 .body("size()", is(2))),
                 dynamicTest("시작 날짜로 예약 필터링", () ->
-                        RestAssured.given().log().all()
-                                .cookie(COOKIE_NAME, getAdminToken())
-                                .when().get("/admin/reservations/search?dateFrom=2026-02-02")
-                                .then().log().all()
+                        ReservationAdminSteps.searchReservation("dateFrom=2026-02-02", getAdminToken())
                                 .statusCode(200)
                                 .body("size()", is(1))),
                 dynamicTest("전체 조건으로 예약 필터링", () ->
-                        RestAssured.given().log().all()
-                                .cookie(COOKIE_NAME, getAdminToken())
-                                .when().get("/admin/reservations/search?memberId=1&themeId=1&dateFrom=2026-02-01&dateTo=2026-03-02")
-                                .then().log().all()
+                        ReservationAdminSteps.searchReservation("memberId=1&themeId=1&dateFrom=2026-02-01&dateTo=2026-03-02", getAdminToken())
                                 .statusCode(200)
                                 .body("size()", is(1))),
                 dynamicTest("종료 날짜로 예약 필터링", () ->
-                        RestAssured.given().log().all()
-                                .cookie(COOKIE_NAME, getAdminToken())
-                                .when().get("/admin/reservations/search?dateTo=2026-03-01")
-                                .then().log().all()
+                        ReservationAdminSteps.searchReservation("dateTo=2026-03-01", getAdminToken())
                                 .statusCode(200)
                                 .body("size()", is(2)))
-
         );
     }
 }
