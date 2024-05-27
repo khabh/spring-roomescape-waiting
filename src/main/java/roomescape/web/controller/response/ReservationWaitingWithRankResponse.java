@@ -11,7 +11,7 @@ public record ReservationWaitingWithRankResponse(
         ReservationTimeResponse time,
         ThemeResponse theme,
         Long order,
-        String status) {
+        String deniedAt) {
 
     public ReservationWaitingWithRankResponse(ReservationWaitingWithRankDto response) {
         this(
@@ -21,7 +21,7 @@ public record ReservationWaitingWithRankResponse(
                 ReservationTimeResponse.from(response.reservationTimeDto()),
                 ThemeResponse.from(response.themeDto()),
                 response.rank(),
-                response.status()
+                response.deniedAt()
         );
     }
 }

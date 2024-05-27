@@ -111,10 +111,10 @@ public class ReservationWaitingService {
                 .toList();
     }
 
-    public ReservationWaitingDto updateWaitingStatus(Long waitingId, ReservationWaitingStatus status) {
+    public ReservationWaitingDto denyWaiting(Long waitingId) {
         ReservationWaiting waiting = reservationWaitingRepository.findById(waitingId)
                 .orElseThrow(() -> new IllegalArgumentException(String.format("예약 대기 상태 변경 실패: 대기를 찾을 수 없습니다. (id: %d)", waitingId)));
-        waiting.setStatus(status);
+        waiting.setDeniedAt(LocalDateTime.now());
         ReservationWaiting updatedWaiting = reservationWaitingRepository.save(waiting);
         return new ReservationWaitingDto(updatedWaiting);
     }

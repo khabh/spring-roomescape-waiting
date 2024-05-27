@@ -27,28 +27,27 @@ public class ReservationWaiting {
     @JoinColumn(nullable = false)
     private Theme theme;
 
-    @Enumerated(EnumType.STRING)
-    private ReservationWaitingStatus status;
+    private LocalDateTime deniedAt;
 
     public ReservationWaiting() {
     }
 
     public ReservationWaiting(LocalDateTime now, Member member, ReservationDate date, ReservationTime time, Theme theme) {
-        this(null, now, member, date, time, theme, ReservationWaitingStatus.ALLOWED);
+        this(null, now, member, date, time, theme, null);
     }
 
-    public ReservationWaiting(LocalDateTime now, Member member, ReservationDate date, ReservationTime time, Theme theme, ReservationWaitingStatus status) {
-        this(null, now, member, date, time, theme, status);
+    public ReservationWaiting(LocalDateTime now, Member member, ReservationDate date, ReservationTime time, Theme theme, LocalDateTime deniedAt) {
+        this(null, now, member, date, time, theme, deniedAt);
     }
 
-    public ReservationWaiting(Long id, LocalDateTime now, Member member, ReservationDate date, ReservationTime time, Theme theme, ReservationWaitingStatus status) {
+    public ReservationWaiting(Long id, LocalDateTime now, Member member, ReservationDate date, ReservationTime time, Theme theme, LocalDateTime deniedAt) {
         validateDateTime(now, date, time);
         this.member = member;
         this.id = id;
         this.date = date;
         this.time = time;
         this.theme = theme;
-        this.status = status;
+        this.deniedAt = deniedAt;
     }
 
     private static void validateDateTime(final LocalDateTime now, final ReservationDate date, final ReservationTime time) {
@@ -68,7 +67,7 @@ public class ReservationWaiting {
     }
 
     public boolean isAllowed() {
-        return ReservationWaitingStatus.ALLOWED == status;
+        return deniedAt == null;
     }
 
     public Long getId() {
@@ -91,11 +90,14 @@ public class ReservationWaiting {
         return theme;
     }
 
-    public ReservationWaitingStatus getStatus() {
-        return status;
+    public String getDeniedAt() {
+        if (deniedAt == null) {
+            return null;
+        }
+        return deniedAt.toString();
     }
 
-    public void setStatus(final ReservationWaitingStatus status) {
-        this.status = status;
+    public void setDeniedAt(LocalDateTime deniedAt) {
+        this.deniedAt = deniedAt;
     }
 }

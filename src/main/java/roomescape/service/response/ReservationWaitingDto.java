@@ -23,7 +23,7 @@ public record ReservationWaitingDto(
                         waiting.getTheme().getName(),
                         waiting.getTheme().getDescription(),
                         waiting.getTheme().getThumbnail()),
-                waiting.getStatus().name()
+                waiting.getDeniedAt()
         );
     }
 }

@@ -10,7 +10,7 @@ public record ReservationWaitingWithRankDto(
         ReservationTimeDto reservationTimeDto,
         ThemeDto themeDto,
         Long rank,
-        String status) {
+        String deniedAt) {
 
     public ReservationWaitingWithRankDto(ReservationWaitingWithRank waitingWithRank) {
         this(
@@ -25,7 +25,7 @@ public record ReservationWaitingWithRankDto(
                         waitingWithRank.getWaiting().getTheme().getDescription(),
                         waitingWithRank.getWaiting().getTheme().getThumbnail()),
                 waitingWithRank.getRank(),
-                waitingWithRank.getWaiting().getStatus().name()
+                waitingWithRank.getWaiting().getDeniedAt()
         );
     }
 }
