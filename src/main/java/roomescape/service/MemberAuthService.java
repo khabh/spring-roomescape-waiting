@@ -5,7 +5,7 @@ import roomescape.domain.Member;
 import roomescape.domain.MemberEmail;
 import roomescape.domain.MemberName;
 import roomescape.domain.MemberPassword;
-import roomescape.infrastructure.MemberRepository;
+import roomescape.domain.repository.MemberRepository;
 import roomescape.service.request.MemberSignUpDto;
 import roomescape.service.response.MemberDto;
 

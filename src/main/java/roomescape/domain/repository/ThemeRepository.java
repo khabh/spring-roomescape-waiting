@@ -1,4 +1,4 @@
-package roomescape.infrastructure;
+package roomescape.domain.repository;
 
 
 import org.springframework.data.domain.Pageable;

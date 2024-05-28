@@ -8,7 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.*;
-import roomescape.infrastructure.*;
+import roomescape.domain.repository.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

@@ -5,8 +5,8 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationDate;
 import roomescape.domain.ReservationWaiting;
-import roomescape.infrastructure.ReservationRepository;
-import roomescape.infrastructure.ReservationWaitingRepository;
+import roomescape.domain.repository.ReservationRepository;
+import roomescape.domain.repository.ReservationWaitingRepository;
 
 import java.util.Optional;
 

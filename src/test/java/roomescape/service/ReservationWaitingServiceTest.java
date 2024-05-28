@@ -7,7 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.*;
-import roomescape.infrastructure.*;
+import roomescape.domain.repository.*;
 import roomescape.service.request.ReservationWaitingSaveDto;
 import roomescape.service.response.ReservationWaitingDto;
 import roomescape.service.response.ReservationWaitingWithRankDto;

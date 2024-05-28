@@ -9,8 +9,8 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import roomescape.infrastructure.ReservationRepository;
-import roomescape.infrastructure.ThemeRepository;
+import roomescape.domain.repository.ReservationRepository;
+import roomescape.domain.repository.ThemeRepository;
 import roomescape.service.exception.ReservationExistsException;
 import roomescape.service.request.ThemeSaveDto;
 
